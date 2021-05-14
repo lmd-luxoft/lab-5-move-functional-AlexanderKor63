@@ -9,61 +9,53 @@ namespace MovieRental
 {
     public class Customer
     {
-        List<Rental> rentals = new List<Rental>();
+        private List<Rental> rentals = new List<Rental>();
         private string name;
+        public Customer(string name)            {  this.name = name;     }
 
-        public Customer(string name)
-        {
-            this.name = name;
-        }
-        public string getName()
-        {
-            return name;
-        }
+        public string getName()                 {  return name;          }
+        internal void addRental(Rental rental)  {  rentals.Add(rental);  }
 
-        internal void addRental(Rental rental)
-        {
-           rentals.Add(rental);
-        }
-
-        internal string statement()
+        internal string report()
         {
             StringBuilder report = new StringBuilder();
-            report.Append($"учет аренды для {getName()}\n");
+
+            reportHead(report, getName());
+            var stats = reportBody(report);
+            reportTail(report, stats.Item1, stats.Item2);
+
+            return report.ToString();
+        }
+
+        private void reportHead(StringBuilder report, string name)
+        {
+            report.Append($"учет аренды для {name}\n");
+        }
+        private Tuple<double,int> reportBody(StringBuilder report)
+        {
             double totalAmount = 0;
-            
-            int frequentRenterPoints = 0;
-            foreach (var item in rentals)
+            int points = 0;
+
+            foreach (Rental item in rentals)
             {
-                double thisAmount = 0;
-                switch (item.getMovie().getPriceCode())
-                {
-                    case Movie.Type.REGULAR:
-                        thisAmount += 2;
-                        if(item.getDaysRented() > 2)
-                            thisAmount += (item.getDaysRented() - 2) * 15;
-                        break;
-                    case Movie.Type.NEW_RELEASE:
-                        thisAmount += item.getDaysRented() * 3;
-                        break;
-                    case Movie.Type.CHILDREN:
-                        thisAmount += 15;
-                        if(item.getDaysRented() > 3)
-                            thisAmount += (item.getDaysRented() - 3) * 15;
-                        break;
-                }
-                
+                double thisAmount = item.findAmount();
+
                 //добавить очки для активного арендатора
-                frequentRenterPoints++;
-                //бонус за аренду новинки на два дня
-                if (item.getMovie().getPriceCode() == Movie.Type.NEW_RELEASE && item.getDaysRented() > 1)
-                    frequentRenterPoints++;
-                report.Append($"\t{item.getMovie()}\t{thisAmount}\n");
-               
+                points++;
+                item.getMovie().bonusPoints(ref points, item.getDaysRented());
+
+                reportItem(report, item.getMovie(), thisAmount);
                 totalAmount += thisAmount;
             }
-            report.Append($"Сумма задолженности составляет {totalAmount}\nВы заработали {frequentRenterPoints} очков за активность");
-            return report.ToString();
+            return new Tuple<double, int>(totalAmount, points);
+        }
+        private void reportItem(StringBuilder report, Movie movie, double amount)
+        {
+            report.Append($"\t{movie}\t{amount}\n");
+        }
+        private void reportTail(StringBuilder report, double amount, int points)
+        {
+            report.Append($"Сумма задолженности составляет {amount}\nВы заработали {points} очков за активность");
         }
     }
 }

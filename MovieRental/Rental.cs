@@ -15,14 +15,8 @@ namespace MovieRental
             this.daysRental = daysRental;
         }
 
-        internal Movie getMovie()
-        {
-           return movie;
-        }
-
-        internal int getDaysRented()
-        {
-            return daysRental;
-        }
+        internal Movie getMovie()     {  return movie;       }
+        internal int getDaysRented()  {  return daysRental;  }
+        internal double findAmount()  {  return movie.getAmount(daysRental);  }
     }
 }

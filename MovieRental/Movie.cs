@@ -4,35 +4,50 @@ using System;
 
 namespace MovieRental
 {
-    public class Movie
+    public abstract class Movie
     {
         private string title;
-        private Type type;
+        public Movie(string title)        {  this.title = title; }
 
-        public Movie(string title, Type type)
-        {
-            this.title = title;
-            this.type = type;
-        }
+        public string getTitle()          {  return title;       }
+        public override string ToString() {  return title;       }
 
-        public enum Type
-        {
-            NEW_RELEASE,
-            REGULAR,
-            CHILDREN
-        }
+        public abstract double getAmount  (int daysRental);
+        public virtual  void   bonusPoints(ref int points, int daysRental) { }
+    }
 
-        public string getTitle()
+    public class NewMovie      : Movie {
+        public NewMovie(string title) : base(title) { }
+
+        public override double getAmount(int daysRental)
         {
-            return title;
+            return daysRental * 3;
         }
-        public Type getPriceCode()
+        public override void bonusPoints(ref int points, int daysRental)
         {
-            return type;
+            if (daysRental > 1)     points++;
         }
-        public override string ToString()
+    }
+    public class RegularMovie  : Movie {
+        public RegularMovie(string title) : base(title) { }
+
+        public override double getAmount(int daysRental)
         {
-            return title;
+            double amount = 2;
+            if (daysRental > 2)   amount += (daysRental - 2) * 15;
+
+            return amount;
+        }
+    }
+    public class ChildrenMovie : Movie {
+        public ChildrenMovie(string title) : base(title) { }
+
+        public override double getAmount(int daysRental)
+        {
+            double amount = 15;
+            if (daysRental > 3)   amount += (daysRental - 3) * 15;
+
+            return amount;
         }
     }
 }
