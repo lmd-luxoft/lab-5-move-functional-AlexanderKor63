@@ -16,27 +16,46 @@ namespace MovieRental
         public string getName()                 {  return name;          }
         internal void addRental(Rental rental)  {  rentals.Add(rental);  }
 
-        internal string statement()
+        internal string report()
         {
             StringBuilder report = new StringBuilder();
-            report.Append($"учет аренды для {getName()}\n");
 
+            reportHead(report, getName());
+            var stats = reportBody(report);
+            reportTail(report, stats.Item1, stats.Item2);
+
+            return report.ToString();
+        }
+
+        private void reportHead(StringBuilder report, string name)
+        {
+            report.Append($"учет аренды для {name}\n");
+        }
+        private Tuple<double,int> reportBody(StringBuilder report)
+        {
             double totalAmount = 0;
-            int frequentRenterPoints = 0;
+            int points = 0;
 
             foreach (Rental item in rentals)
             {
                 double thisAmount = item.findAmount();
-                
-                //добавить очки для активного арендатора
-                frequentRenterPoints++;
-                item.getMovie().bonusPoints(ref frequentRenterPoints, item.getDaysRented());
 
-                report.Append($"\t{item.getMovie()}\t{thisAmount}\n");
+                //добавить очки для активного арендатора
+                points++;
+                item.getMovie().bonusPoints(ref points, item.getDaysRented());
+
+                reportItem(report, item.getMovie(), thisAmount);
                 totalAmount += thisAmount;
             }
-            report.Append($"Сумма задолженности составляет {totalAmount}\nВы заработали {frequentRenterPoints} очков за активность");
-            return report.ToString();
+            return new Tuple<double, int>(totalAmount, points);
+        }
+        private void reportItem(StringBuilder report, Movie movie, double amount)
+        {
+            report.Append($"\t{movie}\t{amount}\n");
+        }
+        private void reportTail(StringBuilder report, double amount, int points)
+        {
+            report.Append($"Сумма задолженности составляет {amount}\nВы заработали {points} очков за активность");
         }
     }
 }

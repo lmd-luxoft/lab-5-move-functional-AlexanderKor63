@@ -57,7 +57,7 @@ namespace MovieRental
             Rental rental3 = new Rental(movie3, 4);
             customer.addRental(rental3);
 
-            string actual = customer.statement();
+            string actual = customer.report();
             Assert.AreEqual("учет аренды для Bug\n\tAngry Birds\t15\n\tStarWar\t30\n\tHatico\t32\nСумма задолженности составляет 77\nВы заработали 4 очков за активность", actual);
     }
 }
