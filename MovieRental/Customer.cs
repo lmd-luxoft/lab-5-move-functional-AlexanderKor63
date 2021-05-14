@@ -11,8 +11,8 @@ namespace MovieRental
     {
         private List<Rental> rentals = new List<Rental>();
         private string name;
-
         public Customer(string name)            {  this.name = name;     }
+
         public string getName()                 {  return name;          }
         internal void addRental(Rental rental)  {  rentals.Add(rental);  }
 
@@ -30,12 +30,9 @@ namespace MovieRental
                 
                 //добавить очки для активного арендатора
                 frequentRenterPoints++;
+                item.getMovie().bonusPoints(ref frequentRenterPoints, item.getDaysRented());
 
-                //бонус за аренду новинки на два дня
-                if (item.getMovie().GetType() == typeof(NewMovie) && item.getDaysRented() > 1)
-                    frequentRenterPoints++;
                 report.Append($"\t{item.getMovie()}\t{thisAmount}\n");
-               
                 totalAmount += thisAmount;
             }
             report.Append($"Сумма задолженности составляет {totalAmount}\nВы заработали {frequentRenterPoints} очков за активность");

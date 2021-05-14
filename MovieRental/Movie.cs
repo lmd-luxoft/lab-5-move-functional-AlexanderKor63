@@ -12,7 +12,8 @@ namespace MovieRental
         public string getTitle()          {  return title;       }
         public override string ToString() {  return title;       }
 
-        public abstract double getAmount(int daysRental);
+        public abstract double getAmount  (int daysRental);
+        public virtual  void   bonusPoints(ref int points, int daysRental) { }
     }
 
     public class NewMovie      : Movie {
@@ -21,6 +22,10 @@ namespace MovieRental
         public override double getAmount(int daysRental)
         {
             return daysRental * 3;
+        }
+        public override void bonusPoints(ref int points, int daysRental)
+        {
+            if (daysRental > 1)     points++;
         }
     }
     public class RegularMovie  : Movie {
